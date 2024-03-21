@@ -105,6 +105,8 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
         return [tempArr[0], tempArr[1], randomNumber(), randomEmail(), new Date(), randomDate()]
     })
 
+    console.log(values)
+
     const insertStr = format(
         `INSERT INTO staff_table
         (first_name, second_name, department_id, email_address, last_updated, created_at)

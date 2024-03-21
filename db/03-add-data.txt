@@ -1,2 +1,0 @@
-You are now connected to database "temp_staff" as user "mac".
-INSERT 0 1
