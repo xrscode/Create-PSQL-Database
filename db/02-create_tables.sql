@@ -13,18 +13,18 @@ CREATE TABLE counterparty
     );
 
 DROP TABLE IF EXISTS address;
-CREATE TABLE address
-    (
+CREATE TABLE address (
     address_id SERIAL PRIMARY KEY,
     address_line_1 character varying,
-    address_line_2 character varying, 
-    district character varying, 
-    postal_code character varying, 
-    country character varying, 
-    phone character varying, 
-    created_at timestamp without time zone, 
+    address_line_2 character varying,
+    district character varying,
+    city character varying,
+    postal_code character varying,
+    country character varying,
+    phone character varying,
+    created_at timestamp without time zone,
     last_updated timestamp without time zone
-    );
+);
 
 DROP TABLE IF EXISTS currency;
 CREATE TABLE currency
@@ -115,7 +115,7 @@ DROP TABLE IF EXISTS staff;
 CREATE TABLE staff (
     staff_id SERIAL PRIMARY KEY,
     first_name VARCHAR,
-    second_name VARCHAR,
+    last_name VARCHAR,
     department_id INT,
     email_address VARCHAR,
     last_updated DATE,
