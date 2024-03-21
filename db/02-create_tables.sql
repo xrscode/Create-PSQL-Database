@@ -124,7 +124,7 @@ CREATE TABLE staff (
 
 DROP TABLE IF EXISTS transaction; 
 CREATE TABLE transaction (
-    transaction_id SERIAL PRIMARY KEY,
+    transaction_id character varying,
     transaction_type character varying,
     sales_order_id character varying,
     purchase_order_id character varying,

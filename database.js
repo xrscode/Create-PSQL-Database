@@ -1,43 +1,71 @@
-const fs = require('fs')
+const fs = require('node:fs')
 const format = require('pg-format')
 const {Client} = require('pg');
+const { execSync } = require('child_process');
 
-const client = new Client(
-    { user: 'mac',
-     host: 'localhost',
-     port: 5432,
-     database: 'temp_staff'}
- )
+// Seed the database synchronously:
+const command = `./run-all.sh`;
+execSync(command);
+
+const client = new Client({user: 'mac',
+host: 'localhost',
+port: 5432,
+database: 'temp_staff'})
+
 
 // Scans JSON Database Backup 
-const fullDatabase = fs.readFile('db/2024-03-05 15-51-00.730403.json', 'utf8', (err, data) => {
-    if(!err){
-        const jsonData = JSON.parse(data)
+// Uses synchronous version.
+jsonData = JSON.parse(fs.readFileSync('db/2024-03-05 15-51-00.730403.json', 'utf8'))
 
-        for (const key in jsonData){
-            console.log(`Currently adding data for ${key}.`)
-            // Get list of table names:
-            const tableNames = Object.keys(jsonData[key][0]).join(', ')
-            // Get values
-            const values = jsonData[key].map((x)=>{
-                return [...Object.values(x)]
+strArr = []
+
+for (const key in jsonData){
+    // Get list of table names:
+    const tableNames = Object.keys(jsonData[key][0]).join(', ')
+    
+    // Get values
+    const values = jsonData[key].map((x)=>{
+        return [...Object.values(x)]
+    })
+
+    // Create query String
+    str = format(`INSERT INTO ${key}
+    (${tableNames})
+    VALUES
+    %L;`, values)
+    strArr.push(str)
+}
+
+async function addDatabase(){
+    for (let i = 0; i < strArr.length; i++){
+        await client.connect().then(()=>{
+            client.query(strArr[i]).then((res, err)=>{
+                console.log(`Added!`)
+            }).catch((err) => {
+                console.log('Error!', err)
             })
-            // Create query String
-            str = format(`INSERT INTO ${key}
-            (${tableNames})
-            VALUES
-            %L;`, values)
-            // Add to database.
-            client.connect().then(()=>{
-                client.query(str).then((res, err)=>{
-                    console.log(`${key} insert complete.`)
-                }).catch((err)=>{
-                    console.log('Counterparty Error!')
-                    console.log(err)
-                })
-            })
-        }
-    } else {
-        console.log('Error!')
+        })
     }
-})
+}
+addDatabase()
+client.end()
+
+
+
+
+   
+
+
+// Currency
+// client.connect().then(()=>{
+//     console.log('Connected!')
+//     console.log('Adding to database...')
+//     client.query(strArr[1]).then((res, err)=>{
+//         console.log('Added!')
+//         client.end()
+//     }).catch((err)=>{
+//         console.log(err)
+//     })
+// })
+
+
