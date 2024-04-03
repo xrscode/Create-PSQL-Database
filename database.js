@@ -2,14 +2,23 @@ const fs = require('fs');
 const format = require('pg-format');
 const { Client } = require('pg');
 
+
 // AWS Client Information:
-const client = new Client ({
-    user: 'postgres',
-    host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
-    database: 'database5761',
-    password: 'amberdog',
-    port: 5432
-})
+// const client = new Client ({
+//     user: 'postgres',
+//     host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
+//     database: 'database5761',
+//     password: 'amberdog',
+//     port: 5432
+// })
+
+// // Local Information:
+const client = new Client(
+    { user: 'mac',
+     host: 'localhost',
+     port: 5432,
+     database: 'temp_staff'}
+ )
 
 async function createTables() {
     try {
@@ -22,6 +31,7 @@ async function createTables() {
 
         // Executes SQL Queries to create tables.
         for (let i = 0; i < sqlQueries.length; i++){
+           console.log(sqlQueries[i])
             await client.query(sqlQueries[i])
         }
         
@@ -43,6 +53,7 @@ async function createTables() {
 
             // Create query.
             const query = format(`INSERT INTO ${key} (${rows}) VALUES %L;`, values);
+            console.log(query)
 
             await client.query(query);
         }

@@ -3,12 +3,22 @@ const axios = require("axios");
 const {Client} = require('pg');
 const format = require("pg-format");
 
-const client = new Client(
-   { user: 'mac',
-    host: 'localhost',
-    port: 5432,
-    database: 'temp_staff'}
-)
+// AWS Client Connection:
+// const client = new Client ({
+//     user: 'postgres',
+//     host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
+//     database: 'database5761',
+//     password: 'amberdog',
+//     port: 5432
+// })
+
+// Local Client Connection:
+const client = new Client ({
+    user: 'mac',
+    host: 'local',
+    database: 'postgres',
+    port: 5432
+})
 
 // client.connect().then(()=>{
 //     console.log('Connected!')
@@ -108,8 +118,8 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
     console.log(values)
 
     const insertStr = format(
-        `INSERT INTO staff_table
-        (first_name, second_name, department_id, email_address, last_updated, created_at)
+        `INSERT INTO staff
+        (first_name, last_name, department_id, email_address, last_updated, created_at)
         VALUES
         %L
         RETURNING *
