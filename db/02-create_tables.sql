@@ -1,5 +1,3 @@
-\c temp_staff
-
 DROP TABLE IF EXISTS counterparty;
 CREATE TABLE counterparty 
     (

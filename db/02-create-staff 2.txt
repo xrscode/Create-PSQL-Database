@@ -1,3 +1,0 @@
-You are now connected to database "temp_staff" as user "mac".
-DROP TABLE
-CREATE TABLE
