@@ -8,16 +8,14 @@ const client = new Client ({
     host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
     database: 'database5761',
     password: 'amberdog',
-    port: 5432,
-    // Certificate of Authenticity(?):
-    ssl: {
-        rejectUnauthorized: false}
+    port: 5432
 })
 
 async function createTables() {
     try {
         // Connect to the database.
         await client.connect(); 
+        console.log('Database connection established.');
       
         // Reads SQL Queries in '02-create-tables.sql'
         const sqlQueries = fs.readFileSync('db/02-create_tables.sql', 'utf8').split(';')
@@ -28,7 +26,7 @@ async function createTables() {
         }
         
         // Read from JSON file.
-        const data = fs.readFileSync('db/2024-03-05 15-51-00.730403.json', 'utf8')
+        const data = fs.readFileSync('db/dbdata.json', 'utf8')
         // Convert into JSON useable object.
         const jsonData = JSON.parse(data);
         
@@ -47,12 +45,12 @@ async function createTables() {
             const query = format(`INSERT INTO ${key} (${rows}) VALUES %L;`, values);
 
             await client.query(query);
-            
         }
-        console.log('Database successfully populated.')
     } catch (error) {
         console.error('Error:', error);
     } finally {
         await client.end(); // Close the client connection.
     }
 }
+
+createTables(); // Call the async function to execute the queries.
