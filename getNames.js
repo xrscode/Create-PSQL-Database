@@ -39,11 +39,13 @@ function getNames () {
     return axios.get('https://pokeapi.co/api/v2/pokemon?limit=150')
     .then(function (response){
     const arr = response.data.results;
+    console.log(arr)
     return arr
 }).catch(function (error){
     console.log(error)
 });
 }
+
 
 // Handle Promise and create random names.
 function createFirstNames() {
@@ -115,7 +117,7 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
         tempArr = name.split(' ')
         return [tempArr[0], tempArr[1], randomNumber(), randomEmail(), new Date(), randomDate()]
     })
-
+ 
 
     const insertStr = format(
         `INSERT INTO staff
@@ -124,7 +126,7 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
         %L
         RETURNING *
         `, values)
- 
+
     client.connect().then(()=>{
     console.log('Connected!')
     console.log(insertStr)
