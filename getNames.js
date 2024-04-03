@@ -13,16 +13,17 @@ const format = require("pg-format");
 // })
 
 // Local Client Connection:
-const client = new Client ({
-    user: 'mac',
-    host: 'local',
-    database: 'postgres',
-    port: 5432
-})
+const client = new Client(
+    { user: 'mac',
+     host: 'localhost',
+     port: 5432,
+     database: 'temp_staff'}
+ )
 
+// Checks Connection by querying staff table:
 // client.connect().then(()=>{
 //     console.log('Connected!')
-//     client.query('SELECT * FROM staff_table;').then((res, err) => {
+//     client.query('SELECT * FROM staff;').then((res, err) => {
 //        console.log(res.rows)
 //     }).catch((err) => {
 //         console.log(`Query Error!`)
@@ -33,7 +34,7 @@ const client = new Client ({
 // })
 
 
-// Returns a Promise (array of 150 Pokemon).
+// // Returns a Promise (array of 150 Pokemon).
 function getNames () {
     return axios.get('https://pokeapi.co/api/v2/pokemon?limit=150')
     .then(function (response){
@@ -115,7 +116,6 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
         return [tempArr[0], tempArr[1], randomNumber(), randomEmail(), new Date(), randomDate()]
     })
 
-    console.log(values)
 
     const insertStr = format(
         `INSERT INTO staff
@@ -127,6 +127,7 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
  
     client.connect().then(()=>{
     console.log('Connected!')
+    console.log(insertStr)
     client.query(insertStr).then((res, err) => {
        console.log(res.rows)
     }).catch((err) => {
@@ -138,9 +139,10 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
 }) 
 })
 
+// Checks to see if data successfully added by querying staff
 // client.connect().then(()=>{
 //     console.log('Second Connection')
-//     client.query('SELECT * FROM staff_table;').then((response, err) => {
+//     client.query('SELECT * FROM staff;').then((response, err) => {
 //         console.log(response.rows)
 //     })
 // })
