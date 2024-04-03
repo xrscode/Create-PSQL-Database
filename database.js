@@ -4,21 +4,21 @@ const { Client } = require('pg');
 
 
 // AWS Client Information:
-// const client = new Client ({
-//     user: 'postgres',
-//     host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
-//     database: 'database5761',
-//     password: 'amberdog',
-//     port: 5432
-// })
+const client = new Client ({
+    user: 'postgres',
+    host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
+    database: 'database5761',
+    password: 'amberdog',
+    port: 5432
+})
 
 // // Local Information:
-const client = new Client(
-    { user: 'mac',
-     host: 'localhost',
-     port: 5432,
-     database: 'temp_staff'}
- )
+// const client = new Client(
+//     { user: 'mac',
+//      host: 'localhost',
+//      port: 5432,
+//      database: 'totesys'}
+//  )
 
 async function createTables() {
     try {
@@ -31,7 +31,7 @@ async function createTables() {
 
         // Executes SQL Queries to create tables.
         for (let i = 0; i < sqlQueries.length; i++){
-           console.log(sqlQueries[i])
+        //    console.log(sqlQueries[i])
             await client.query(sqlQueries[i])
         }
         
@@ -47,6 +47,9 @@ async function createTables() {
 
             // rows are the names of the rows.
             const rows = Object.keys(jsonData[key][0]).join(', ');
+            
+            
+        
            
             // Generate the values by mapping over data.
             const values = jsonData[key].map(x => Object.values(x));
@@ -57,7 +60,15 @@ async function createTables() {
             
 
             await client.query(query);
+           
+            if(key == 'staff'){
+                console.log(rows)
+                console.log(values)
+                await client.query(`SELECT setval ('staff_staff_id_seq', 20);`)
+            }
         }
+        console.log('Finished populating database.')
+        
     } catch (error) {
         console.error('Error:', error);
     } finally {

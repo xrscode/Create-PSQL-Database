@@ -4,21 +4,21 @@ const {Client} = require('pg');
 const format = require("pg-format");
 
 // AWS Client Connection:
-// const client = new Client ({
-//     user: 'postgres',
-//     host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
-//     database: 'database5761',
-//     password: 'amberdog',
-//     port: 5432
-// })
+const client = new Client ({
+    user: 'postgres',
+    host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
+    database: 'database5761',
+    password: 'amberdog',
+    port: 5432
+})
 
 // Local Client Connection:
-const client = new Client(
-    { user: 'mac',
-     host: 'localhost',
-     port: 5432,
-     database: 'temp_staff'}
- )
+// const client = new Client(
+//     { user: 'mac',
+//      host: 'localhost',
+//      port: 5432,
+//      database: 'totesys'}
+//  )
 
 // Checks Connection by querying staff table:
 // client.connect().then(()=>{
@@ -34,12 +34,11 @@ const client = new Client(
 // })
 
 
-// // Returns a Promise (array of 150 Pokemon).
+// Returns a Promise (array of 150 Pokemon).
 function getNames () {
     return axios.get('https://pokeapi.co/api/v2/pokemon?limit=150')
     .then(function (response){
     const arr = response.data.results;
-    console.log(arr)
     return arr
 }).catch(function (error){
     console.log(error)
@@ -129,7 +128,6 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
 
     client.connect().then(()=>{
     console.log('Connected!')
-    console.log(insertStr)
     client.query(insertStr).then((res, err) => {
        console.log(res.rows)
     }).catch((err) => {
@@ -143,7 +141,7 @@ Promise.all([createFirstNames(), createSecondNames()]).then(function (results) {
 
 // Checks to see if data successfully added by querying staff
 // client.connect().then(()=>{
-//     console.log('Second Connection')
+//     console.log('Second Connection to check staff.')
 //     client.query('SELECT * FROM staff;').then((response, err) => {
 //         console.log(response.rows)
 //     })
