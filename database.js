@@ -4,21 +4,21 @@ const { Client } = require('pg');
 
 
 // AWS Client Information:
-const client = new Client ({
-    user: 'postgres',
-    host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
-    database: 'database5761',
-    password: 'amberdog',
-    port: 5432
-})
+// const client = new Client ({
+//     user: 'postgres',
+//     host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
+//     database: 'database5761',
+//     password: 'amberdog',
+//     port: 5432
+// })
 
 // // Local Information:
-// const client = new Client(
-//     { user: 'mac',
-//      host: 'localhost',
-//      port: 5432,
-//      database: 'totesys'}
-//  )
+const client = new Client(
+    { user: 'mac',
+     host: 'localhost',
+     port: 5432,
+     database: 'totesys'}
+ )
 
 async function createTables() {
     try {
@@ -27,7 +27,7 @@ async function createTables() {
         console.log('Database connection established.');
       
         // Reads SQL Queries in '02-create-tables.sql'
-        const sqlQueries = fs.readFileSync('db/02-create_tables.sql', 'utf8').split(';')
+        const sqlQueries = fs.readFileSync('db/create_totesys.sql', 'utf8').split(';')
 
         // Executes SQL Queries to create tables.
         for (let i = 0; i < sqlQueries.length; i++){
@@ -42,15 +42,11 @@ async function createTables() {
         
         // Iterate and build queries.   
         for (const key in jsonData) {
-            jsonData[key][0]
             // Each key represents individual tables.
 
             // rows are the names of the rows.
             const rows = Object.keys(jsonData[key][0]).join(', ');
             
-            
-        
-           
             // Generate the values by mapping over data.
             const values = jsonData[key].map(x => Object.values(x));
             
@@ -58,12 +54,11 @@ async function createTables() {
             // Create query.
             const query = format(`INSERT INTO ${key} (${rows}) VALUES %L;`, values);
             
+            
 
             await client.query(query);
            
             if(key == 'staff'){
-                console.log(rows)
-                console.log(values)
                 await client.query(`SELECT setval ('staff_staff_id_seq', 20);`)
             }
         }

@@ -5,12 +5,11 @@ import boto3
 online = 0
 
 if online == 0:
-    con = pg8000.connect(
-        host='localhost',
-        port=5432,
-        database='totesys',
-        user='mac'
-    )
+    credentials = {'host': 'localhost',
+                   'port': 5432,
+                   'database': 'totesys',
+                   'user': 'mac'}
+
 elif online == 1:
     # AWS Secret Parameter Store - DB Credentials.
     def get_secret():
@@ -30,28 +29,28 @@ elif online == 1:
             raise e
         secret = get_secret_value_response['SecretString']
         data = json.loads(secret)
-        return data
-
+        cred = {
+            'host': data['host'],
+            'port': data['port'],
+            'user': data['username'],
+            'password': data['password'],
+            'database': data['dbname']
+        }
+        return cred
     credentials = get_secret()
 
-    con = pg8000.connect(
-        host=credentials['host'],
-        port=credentials['port'],
-        database=credentials['dbname'],
-        user=credentials['username'],
-        password=credentials['password']
-    )
 
 # Load Data from json file:
 with open('db/dbdata.json') as file:
     data = json.loads(file.read())
 
 # Load SQL Queries to setup database:
-with open('db/02-create_tables.sql') as file:
+with open('db/create_totesys.sql') as file:
     sql = file.read()
 
 
 def create_database():
+    con = pg8000.connect(**credentials)
     f"""This function will create a PSQL databse."""
     queries = sql.split('; ')
     for query in queries:
@@ -61,9 +60,13 @@ def create_database():
         except RuntimeError as e:
             print(e)
     print('Database successfully created.')
+    con.close()
+    print('Connection closed.')
 
 
 def add_data():
+    print(credentials)
+    con = pg8000.connect(**credentials)
     f"""This function will add data to a PSQL database."""
     cursor = con.cursor()
     for item in data:
@@ -78,13 +81,11 @@ def add_data():
             # Iterate over values in table
             val = [str(value) for value in x.values()]
             query = f"""INSERT INTO {table} ({', '.join(rows)}) VALUES ({placeholder});"""
+            print(f"{query}, {val}")
             cursor.execute(query, val)
             con.commit()
         print(f'Data added to {table}...moving onto next table now.')
     cursor.close()
+    con.close()
+    print('Connection closed.')
     pass
-
-
-create_database()
-add_data()
-con.close()
