@@ -3,6 +3,7 @@ import json
 import boto3
 from pprint import pprint
 import pandas as pd
+from forex_python.converter import CurrencyCodes
 
 online = 0
 
@@ -101,19 +102,38 @@ def dim_counterparty(file):
     return df
 
 
-print(dim_counterparty(data))
+def dim_currency(file):
+    # Currency_id, currency_code, currency_name.
+    currency = file['currency']
+    if len(currency) < 1:
+        raise Exception('No data.')
 
-#   dim_staff = ['staff_id', 'first_name', 'last_name',
-#                  'department_name', 'location', 'email_address']
-#     dim_data = ['date_id', 'year', 'month', 'day',
-#                 'day_of_week', 'day_name', 'month_name', 'quarter']
-#     dim_counterparty = ['counterparty_id', 'counterparty_legal_name', 'counterparty_legal_address_line_1', 'counterparty_legal_address_line_2',
-#                         'counterparty_legal_district', 'counterparty_legal_city', 'counterparty_legal_postal_code', 'counterparty_legal_country', 'counterparty_legal_phone_number']
-#     dim_currency = ['currency_id', 'currency_code', 'currency_name']
-#     dim_design = ['design_id', 'design_name', 'file_location', 'file_name']
-#     dim_location = ['location_id', 'address_line_1', 'address_line_2',
-#                     'district', 'city', 'postal_code', 'country', 'phone']
-#     dim_date = ['date_id', 'year', 'month', 'day',
-#                 'day_of_week', 'day_name', 'month_name', 'quarter']
-#     fact_Sales_order = ['sales_record_id', 'sales_order_id', 'created_date', 'created_time', 'last_updated_date', 'sales_staff_id', 'counterparty_id',
-#                         'units_sold', 'unit_price', 'currency_id', 'design_id', 'agreed_payment_date', 'agreed_delivery_date', 'agreed_delivery_location_id']
+    c = CurrencyCodes()
+    dim_currency_obj = {'dim_currency': []}
+    for record in currency:
+        obj = {'currency_id': record['currency_id'], 'currency_code': record['currency_code'],
+               'currency_name': c.get_currency_name(record['currency_code'])}
+        dim_currency_obj['dim_currency'].append(obj)
+    df = pd.DataFrame(data=dim_currency_obj)
+    return df
+
+
+def dim_design(file):
+    design = file['design']
+    dim_design_obj = {'dim_design': []}
+    for item in design:
+        obj = {'design_id': item['design_id'], 'design_name': item['design_name'],
+               'file_location': item['file_location'], 'file_name': item['file_name']}
+        dim_design_obj['dim_design'].append(obj)
+    df = pd.DataFrame(data=dim_design_obj)
+    return df
+
+
+def dim_location(file):
+    location = file
+    dim_location_obj = {'dim_location': []}
+    for item in location:
+        print(item)
+
+
+dim_location(data)
