@@ -4,6 +4,7 @@ import boto3
 from pprint import pprint
 import pandas as pd
 from forex_python.converter import CurrencyCodes
+from datetime import datetime
 
 online = 0
 
@@ -160,13 +161,53 @@ def dim_staff(file):
 
 
 def dim_date(file):
-    pass
+    sales_order = file['sales_order']
+    dim_date_obj = {'dim_date': []}
+    for item in sales_order:
+        obj = {}
+        datetime_str = item['created_at'].split('.')[0]
+        datetime_obj = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+        obj['date_id'] = item['created_at']
+        obj['year'] = datetime_obj.year
+        obj['month'] = datetime_obj.month
+        obj['day'] = datetime_obj.day
+        obj['day_of_week'] = datetime_obj.weekday()
+        obj['day_name'] = datetime_obj.strftime('%A')
+        obj['month_name'] = datetime_obj.strftime('%B')
+        if datetime_obj.month > 0 and datetime_obj.month <= 3:
+            quarter = 1
+        elif datetime_obj.month > 3 and datetime_obj.month <= 6:
+            quarter = 2
+        elif datetime_obj.month > 6 and datetime_obj.month <= 9:
+            quarter = 3
+        else:
+            quarter = 4
+        obj['quarter'] = quarter
+        dim_date_obj['dim_date'].append(obj)
+    df = pd.DataFrame(data=dim_date_obj)
+    return df
 
 
-def fact_purchase_order(file):
-    purchase_order = file['purchase_order']
-    fact_purchase_order_obj = {'fact_purchase_order': []}
-    pass
-
-
-print(dim_date())
+def fact_sales_order(file):
+    sales_order = file['sales_order']
+    fact_sales_order_obj = {'fact_sales_order': []}
+    for item in sales_order:
+        pprint(item)
+        obj = {}
+        obj['sales_order_id'] = item['sales_order_id']
+        obj['created_date'] = item['created_at'][0:10]
+        obj['created_time'] = item['created_at'][10:]
+        obj['last_updated_date'] = item['last_updated'][0:10]
+        obj['last_updated_time'] = item['last_updated'][10:]
+        obj['sales_staff_id'] = item['staff_id']
+        obj['counterparty_id'] = item['counterparty_id']
+        obj['units_sold'] = item['units_sold']
+        obj['unit_price'] = item['unit_price']
+        obj['currency_id'] = item['currency_id']
+        obj['design_id'] = item['design_id']
+        obj['agreed_payment_date'] = item['agreed_payment_date']
+        obj['agreed_delivery_date'] = item['agreed_delivery_date']
+        obj['agreed_delivery_location_id'] = item['agreed_delivery_location_id']
+        fact_sales_order_obj['fact_sales_order'].append(obj)
+    df = pd.DataFrame(data=fact_sales_order_obj)
+    return df
