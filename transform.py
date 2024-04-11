@@ -159,5 +159,14 @@ def dim_staff(file):
     return df
 
 
-def fact_purchase_order():
+def dim_date(file):
     pass
+
+
+def fact_purchase_order(file):
+    purchase_order = file['purchase_order']
+    fact_purchase_order_obj = {'fact_purchase_order': []}
+    pass
+
+
+print(dim_date())

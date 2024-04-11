@@ -84,10 +84,10 @@ The list of tables in the complete warehouse is:
 However, for your minimum viable product, you need only populate the following:
 |tablename|
 |---------|
-|fact_sales_order|
-|dim_staff|
-|dim_location|
-|dim_design|
+|fact_sales_order| x
+|dim_staff| x
+|dim_location| x
+|dim_design| x
 |dim_date|
 |dim_currency|
 |dim_counterparty|
