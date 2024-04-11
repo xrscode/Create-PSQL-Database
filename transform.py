@@ -8,7 +8,7 @@ from forex_python.converter import CurrencyCodes
 online = 0
 
 if online == 0:
-    credentials = {'host': 'localhost',
+    credentials = {'host': 'fact_purchase_order',
                    'port': 5432,
                    'database': 'staff',
                    'user': 'mac'}
@@ -130,10 +130,34 @@ def dim_design(file):
 
 
 def dim_location(file):
-    location = file
+    address = file['address']
     dim_location_obj = {'dim_location': []}
-    for item in location:
-        print(item)
+    for item in address:
+        obj = {'location_id': item['address_id'], 'address_line_1': item['address_line_1'], 'address_line_2': item['address_line_2'],
+               'district': item['district'], 'city': item['city'], 'postal_code': item['postal_code'], 'country': item['country'], 'phone': item['phone']}
+        dim_location_obj['dim_location'].append(obj)
+        df = pd.DataFrame(data=dim_location_obj)
+    return dim_location_obj
 
 
-dim_location(data)
+def dim_staff(file):
+    staff = file['staff']
+    department = file['department']
+    dim_staff_obj = {'dim_staff': []}
+    for item in staff:
+        staff_id = item['staff_id']
+        department_id = item['department_id']
+        obj = {'staff_id': item['staff_id'], 'first_name': item['first_name'], 'last_name': item['last_name'],
+               'department_name': None, 'location': None, 'email_address': item['email_address']}
+        for record in department:
+            if department_id == record['department_id']:
+                obj['department_name'] = record['department_name']
+                obj['location'] = record['location']
+                break
+        dim_staff_obj['dim_staff'].append(obj)
+    df = pd.DataFrame(data=dim_staff_obj)
+    return df
+
+
+def fact_purchase_order():
+    pass
