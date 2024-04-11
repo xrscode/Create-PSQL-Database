@@ -149,7 +149,7 @@ def dim_staff(file):
         staff_id = item['staff_id']
         department_id = item['department_id']
         obj = {'staff_id': item['staff_id'], 'first_name': item['first_name'], 'last_name': item['last_name'],
-               'department_name': None, 'location': None, 'email_address': item['email_address']}
+               'email_address': item['email_address']}
         for record in department:
             if department_id == record['department_id']:
                 obj['department_name'] = record['department_name']
