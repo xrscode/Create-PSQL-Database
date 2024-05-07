@@ -47,14 +47,13 @@ async function createTables() {
             // rows are the names of the rows.
             const rows = Object.keys(jsonData[key][0]).join(', ');
             
-            // Generate the values by mapping over data.
+            // Generate the values by mapping over data. Array of arrays.
             const values = jsonData[key].map(x => Object.values(x));
-            
+
 
             // Create query.
             const query = format(`INSERT INTO ${key} (${rows}) VALUES %L;`, values);
-            
-            
+
 
             await client.query(query);
            

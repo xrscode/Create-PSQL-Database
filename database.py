@@ -11,6 +11,7 @@ if online == 0:
                    'user': 'mac'}
 
 elif online == 1:
+
     # AWS Secret Parameter Store - DB Credentials.
     def get_secret():
         secret_name = "totesysDatabase"
@@ -39,7 +40,6 @@ elif online == 1:
         return cred
     credentials = get_secret()
 
-
 # Load Data from json file:
 with open('db/dbdata.json') as file:
     data = json.loads(file.read())
@@ -65,27 +65,26 @@ def create_database():
 
 
 def add_data():
-    print(credentials)
     con = pg8000.connect(**credentials)
     f"""This function will add data to a PSQL database."""
     cursor = con.cursor()
-    for item in data:
-        # Iterate over Table.
-        table = item
+    for table in data:
+        # Iterate through Dictionary.
+        # Each Key is a table Name.
         print(f"Adding data to {table}")
-        rows = [x for x in data[item][0]]
-        placeholder = ', '.join('%s' for _ in range(len(rows)))
-        a = data[item]
 
-        for x in a:
-            # Iterate over values in table
-            val = [str(value) for value in x.values()]
-            query = f"""INSERT INTO {table} ({', '.join(rows)}) VALUES ({placeholder});"""
-            print(f"{query}, {val}")
-            cursor.execute(query, val)
-            con.commit()
-        print(f'Data added to {table}...moving onto next table now.')
-    cursor.close()
+        # Extract column names:
+        column_names = [x for x in data[table][0]]
+        column_names_string = ', '.join(column_names)
+        placeholder = ', '.join('%s' for _ in range(len(column_names)))
+        values = [list(row.values()) for row in data[table]]
+        query = f"INSERT INTO {table} ({column_names_string}) VALUES ({placeholder});"
+        cursor.executemany(query, values)
+        con.commit()
     con.close()
     print('Connection closed.')
     pass
+
+
+create_database()
+add_data()
