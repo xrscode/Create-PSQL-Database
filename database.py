@@ -1,14 +1,17 @@
 import pg8000
 import json
 import boto3
+from dotenv import load_dotenv
+import os
 
 online = 0
 
 if online == 0:
-    credentials = {'host': 'localhost',
-                   'port': 5432,
-                   'database': 'totesys',
-                   'user': 'mac'}
+    load_dotenv()
+    credentials = {'host': os.getenv("DB_HOST"),
+                   'port': os.getenv("DB_PORT"),
+                   'database': os.getenv("DB_NAME"),
+                   'user': os.getenv("DB_USER")}
 
 elif online == 1:
 
@@ -72,7 +75,6 @@ def add_data():
         # Iterate through Dictionary.
         # Each Key is a table Name.
         print(f"Adding data to {table}")
-
         # Extract column names:
         column_names = [x for x in data[table][0]]
         column_names_string = ', '.join(column_names)

@@ -1,24 +1,32 @@
 const fs = require('fs');
 const format = require('pg-format');
 const { Client } = require('pg');
+require('dotenv').config();
+
+let online = 0;
+let client;
+
+if (online === 0){
+    // Local Client:
+    client = new Client(
+        { user: process.env.DB_USER,
+         host: process.env.DB_HOST,
+         port: process.env.DB_PORT,
+         database: process.env.DB_NAME}
+     )
+} else if (online === 1){
+    // AWS Client:
+    client = new Client ({
+        user: process.env.AWS_USER,
+        host: process.env.AWS_HOST,
+        database: process.env.AWS_DATABASE,
+        password: process.env.AWS_PASSWORD,
+        port: process.env.AWS_PORT
+    })
+}
 
 
-// AWS Client Information:
-// const client = new Client ({
-//     user: 'postgres',
-//     host: 'database-5761i.cfk2gikqsjhw.eu-west-2.rds.amazonaws.com',
-//     database: 'database5761',
-//     password: 'amberdog',
-//     port: 5432
-// })
 
-// // Local Information:
-const client = new Client(
-    { user: 'mac',
-     host: 'localhost',
-     port: 5432,
-     database: 'totesys'}
- )
 
 async function createTables() {
     try {
